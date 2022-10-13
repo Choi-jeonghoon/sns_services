@@ -1,5 +1,5 @@
-const express = require("express");
-
+const express = require('express');
+const { isLoggedIn, isNotLoggedIn } = require('../middlewares/err');
 const router = express.Router();
 
 router.use((req, res, next) => {
@@ -10,16 +10,16 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get("/profile", (req, res) => {
-  res.render("profile", { title: "내정보 - NodeBird" });
+router.get('/profile', isLoggedIn, (req, res) => {
+  res.render('profile', { title: '내정보 - NodeBird' });
 });
 
-router.get("/join", (req, res) => {
-  res.render("join", { title: "회원가입 - NodeBird" });
+router.get('/join', isNotLoggedIn, (req, res) => {
+  res.render('join', { title: '회원가입 - NodeBird' });
 });
-router.get("/", (req, res, next) => {
+router.get('/', (req, res, next) => {
   const twits = [];
-  res.render("main", { title: "내정보 - NodeBird", twits });
+  res.render('main', { title: '내정보 - NodeBird', twits });
 });
 
 module.exports = router;
