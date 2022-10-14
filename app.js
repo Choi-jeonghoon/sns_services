@@ -9,6 +9,7 @@ const passport = require('passport');
 
 dotenv.config();
 const pageRouter = require('./routes/page');
+const authRouter = require('./routes/auth');
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 
@@ -42,21 +43,21 @@ app.use(
       httpOnly: true,
       secure: false,
     },
-  }),
-);
+  }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/', pageRouter);
+app.use('/auth', authRouter);
 
 app.use((req, res, next) => {
-  const error = new Error('${req.method}${req.url} 라우터가 없습니다.');
+  const error = new Error(`${req.method}${req.url} 라우터가 없습니다.`);
   error.status = 404;
   next(error);
 });
 
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
-  res.locals.error = porcess.env.NODE_ENV !== 'production' ? err : {};
+  res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
   res.status(err.status || 500);
   res.render('error');
 });

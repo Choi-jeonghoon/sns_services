@@ -12,7 +12,7 @@ router.post('./join', isNotLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({ where: { email } });
     if (exUser) {
-      return res.redirect('./join?error=exist');
+      return res.redirect('/join?error=exist');
     }
     const hash = await bcrypt.hash(password, 12);
     await User.create({
@@ -27,14 +27,14 @@ router.post('./join', isNotLoggedIn, async (req, res, next) => {
   }
 });
 
-router.post('./login', isNotLoggedIn, (req, res, next) => {
+router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (authError, user, info) => {
     if (authError) {
       console.error(authError);
       return next(authError);
     }
     if (!user) {
-      return res.redirect('/?loginError=${info.message}');
+      return res.redirect(`/?loginError=${info.message}`);
     }
     return req.login(user, loginError => {
       if (loginError) {
@@ -47,9 +47,18 @@ router.post('./login', isNotLoggedIn, (req, res, next) => {
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
-  req.logOut();
+  req.logout();
   req.session.destroy();
   res.redirect('/');
 });
+
+router.get('kakao', passport.authenticate('kakao'));
+router.get(
+  '/kakao/callback',
+  passport.authenticate('kakao', { failureRedirect: '' }),
+  (req, res) => {
+    res.redirect('/');
+  },
+);
 
 module.exports = router;
