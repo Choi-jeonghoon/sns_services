@@ -47,12 +47,23 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
-  req.logout();
-  req.session.destroy();
-  res.redirect('/');
+  req.logout(err => {
+    req.session.destroy();
+    if (!err) {
+      res.redirect('/');
+    }//전부 동일한 작동
+    // if (err) {
+    //   res.redirect('/');
+    // } else {
+    //   //err false일때
+    //   res.redirect('/');
+    // } //npm i passport@0.6 버전
+  });
+  // req.session.destroy();
+  // res.redirect('/');----------------> npm i passport@0.5 버전
 });
 
-router.get('kakao', passport.authenticate('kakao'));
+router.get('/kakao', passport.authenticate('kakao'));
 router.get(
   '/kakao/callback',
   passport.authenticate('kakao', { failureRedirect: '' }),
